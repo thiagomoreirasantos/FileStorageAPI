@@ -8,11 +8,25 @@ import (
 	"path/filepath"
 	"strings"
 
+	httpSwagger "github.com/swaggo/http-swagger"
+	_ "github.com/thiagomoreirasantos/FileStorageAPI/docs" // Importação para o Swagger
+
 	"github.com/gorilla/mux"
 )
 
 const storagePath = "/app/storage"
 
+// uploadFile recebe um arquivo via formulário e o armazena no servidor.
+//
+// @Summary Faz upload de um arquivo
+// @Description Envia um arquivo e salva no volume do Docker
+// @Accept multipart/form-data
+// @Produce text/plain
+// @Param file formData file true "Arquivo a ser enviado"
+// @Success 200 {string} string "Arquivo salvo com sucesso"
+// @Failure 400 {string} string "Erro ao receber o arquivo"
+// @Failure 500 {string} string "Erro ao salvar arquivo"
+// @Router /upload [post]
 func uploadFile(w http.ResponseWriter, r *http.Request) {
 	r.ParseMultipartForm(10 << 20) // 10 MB
 	file, handler, err := r.FormFile("file")
@@ -44,6 +58,17 @@ func uploadFile(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, "Successfully Uploaded File: %s\n", handler.Filename)
 }
 
+// uploadFile recebe um arquivo via formulário e o armazena no servidor.
+//
+// @Summary Faz upload de um arquivo
+// @Description Envia um arquivo e salva no volume do Docker
+// @Accept multipart/form-data
+// @Produce text/plain
+// @Param file formData file true "Arquivo a ser enviado"
+// @Success 200 {string} string "Arquivo salvo com sucesso"
+// @Failure 400 {string} string "Erro ao receber o arquivo"
+// @Failure 500 {string} string "Erro ao salvar arquivo"
+// @Router /upload [post]
 func ListFiles(w http.ResponseWriter, r *http.Request) {
 	files, err := os.ReadDir(storagePath)
 	if err != nil {
@@ -60,6 +85,15 @@ func ListFiles(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, "Files: %v\n", strings.Join(fileNames, ", "))
 }
 
+// downloadFile baixa um arquivo específico.
+//
+// @Summary Faz o download de um arquivo
+// @Description Baixa um arquivo pelo nome
+// @Produce application/octet-stream
+// @Param filename path string true "Nome do arquivo"
+// @Success 200 {file} file "Arquivo baixado com sucesso"
+// @Failure 404 {string} string "Arquivo não encontrado"
+// @Router /files/{filename} [get]
 func DownloadFile(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	fileName := vars["filename"]
@@ -68,6 +102,14 @@ func DownloadFile(w http.ResponseWriter, r *http.Request) {
 	http.ServeFile(w, r, filepath)
 }
 
+// deleteFile exclui um arquivo específico.
+//
+// @Summary Exclui um arquivo
+// @Description Remove permanentemente um arquivo armazenado
+// @Param filename path string true "Nome do arquivo"
+// @Success 200 {string} string "Arquivo excluído com sucesso"
+// @Failure 404 {string} string "Arquivo não encontrado"
+// @Router /files/{filename} [delete]
 func deleteFile(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	fileName := vars["filename"]
@@ -83,8 +125,19 @@ func deleteFile(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, "Successfully Deleted File: %s\n", fileName)
 }
 
+// deleteFile exclui um arquivo específico.
+//
+// @Summary Exclui um arquivo
+// @Description Remove permanentemente um arquivo armazenado
+// @Param filename path string true "Nome do arquivo"
+// @Success 200 {string} string "Arquivo excluído com sucesso"
+// @Failure 404 {string} string "Arquivo não encontrado"
+// @Router /files/{filename} [delete]
 func main() {
 	r := mux.NewRouter()
+
+	r.PathPrefix("/swagger/").Handler(httpSwagger.WrapHandler)
+
 	r.HandleFunc("/upload", uploadFile).Methods("POST")
 	r.HandleFunc("/files", ListFiles).Methods("GET")
 	r.HandleFunc("/files/{filename}", DownloadFile).Methods("GET")

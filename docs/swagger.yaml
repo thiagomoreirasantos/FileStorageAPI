@@ -1,0 +1,70 @@
+info:
+  contact: {}
+paths:
+  /files/{filename}:
+    delete:
+      description: Remove permanentemente um arquivo armazenado
+      parameters:
+      - description: Nome do arquivo
+        in: path
+        name: filename
+        required: true
+        type: string
+      responses:
+        "200":
+          description: Arquivo excluído com sucesso
+          schema:
+            type: string
+        "404":
+          description: Arquivo não encontrado
+          schema:
+            type: string
+      summary: Exclui um arquivo
+    get:
+      description: Baixa um arquivo pelo nome
+      parameters:
+      - description: Nome do arquivo
+        in: path
+        name: filename
+        required: true
+        type: string
+      produces:
+      - application/octet-stream
+      responses:
+        "200":
+          description: Arquivo baixado com sucesso
+          schema:
+            type: file
+        "404":
+          description: Arquivo não encontrado
+          schema:
+            type: string
+      summary: Faz o download de um arquivo
+  /upload:
+    post:
+      consumes:
+      - multipart/form-data
+      description: Envia um arquivo e salva no volume do Docker
+      parameters:
+      - description: Arquivo a ser enviado
+        in: formData
+        name: file
+        required: true
+        type: file
+      produces:
+      - text/plain
+      responses:
+        "200":
+          description: Arquivo salvo com sucesso
+          schema:
+            type: string
+        "400":
+          description: Erro ao receber o arquivo
+          schema:
+            type: string
+        "500":
+          description: Erro ao salvar arquivo
+          schema:
+            type: string
+      summary: Faz upload de um arquivo
+swagger: "2.0"
