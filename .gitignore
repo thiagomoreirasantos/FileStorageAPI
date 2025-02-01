@@ -1,0 +1,42 @@
+# Diretório de dependências do Go Modules
+/go.sum
+/go.mod
+
+# Binários e compilação
+*.exe
+*.dll
+*.so
+*.dylib
+*.out
+*.a
+*.o
+
+# Diretório de builds
+/build/
+/bin/
+/pkg/
+
+# Arquivos temporários de edição
+*.swp
+*.swo
+*.DS_Store
+*.vscode/
+*.idea/
+*.env
+
+# Logs e debug
+*.log
+*.test
+debug/
+
+# Testes do Go
+*.cover
+*.prof
+*.tmp
+*testresult*
+
+# Configurações locais
+.env
+.env.local
+config.yaml
+config.json
