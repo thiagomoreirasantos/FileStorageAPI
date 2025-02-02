@@ -49,3 +49,18 @@ go run main.go
 http://localhost:8080
 http://localhost:8080/swagger/index.html
 ```
+
+### 🐳 **Rodando com Docker**
+
+### **Se preferir rodar a API dentro de um contêiner Docker:**
+### 1️⃣ **Construir a imagem Docker**
+```bash
+docker build -t file-storage-api .
+```
+
+### 2️⃣ **Rodar o contêiner**
+```bash
+docker run -p 8080:8080 -v storage_data:/app/storage file-storage-api
+```
+
+### ***Agora, a API pode ser acessada em http://localhost:8080.***
